@@ -65,19 +65,21 @@ if __name__ == '__main__':
 # displacement as well as drift values in the same figure
     for files in glob.glob(dr + '*.txt'):
         table= get_osmT(files)
-        for p in table['rootnames']:
+        rootnames= np.array(table['rootnames'])
+        propID= np.array(table['Prop ID'])
+        T1= np.array(table['T1'])
+        for p in rootnames:
             for dirpath, dirnames, filenames in os.walk(
-                       '/smov/cos/Data/{}/otfrdata/'.format(np.array(
-                       table['Prop ID'][np.where(table['rootnames'] == p)])[0]),
-                       topdown= True):
+            '/smov/cos/Data/{}/otfrdata/'.format(propID[np.where(rootnames == p)[0][0]]
+            ),topdown= True):
                 for name in filenames:
                     if name[-18:] == '_lampflash.fits.gz':
+                        print os.path.join(dirpath, name)
                         lamp_file= os.path.join(dirpath, name)
                         lamp_dat= Table.read(lamp_file)
                         lamp_shifts= -1* np.array(lamp_dat['SHIFT_DISP'])
-                        plt.plot(np.ones(len(lamp_shifts))*np.array(
-                               table['T1'][np.where(
-                               table['rootnames'] == p)])[0], lamp_shifts, 'ro')
+                        plt.plot(np.ones(len(lamp_shifts))* T1[np.where(
+                               rootnames == p)[0][0]], lamp_shifts, 'ro')
                     else:
                         continue
 
